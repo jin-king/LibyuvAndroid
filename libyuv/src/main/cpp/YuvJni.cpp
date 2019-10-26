@@ -208,7 +208,7 @@ void cropI420(jbyte *src_i420_data, jint src_length, jint width, jint height,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
+Java_com_erick_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
                                          jbyteArray nv21Src, jint width,
                                          jint height, jbyteArray i420Dst,
                                          jint dst_width, jint dst_height,
@@ -267,7 +267,7 @@ Java_com_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyteArray src_, jint width,
+Java_com_erick_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyteArray src_, jint width,
                                          jint height, jbyteArray dst_, jint dst_width, jint dst_height,
                                          jint left, jint top) {
     //裁剪的区域大小不对
@@ -288,7 +288,7 @@ Java_com_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyteArray 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvMirrorI420(JNIEnv *env, jclass type, jbyteArray i420Src,
+Java_com_erick_utils_libyuv_YuvUtils_yuvMirrorI420(JNIEnv *env, jclass type, jbyteArray i420Src,
                                            jint width, jint height, jbyteArray i420Dst) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
@@ -299,7 +299,7 @@ Java_com_utils_libyuv_YuvUtils_yuvMirrorI420(JNIEnv *env, jclass type, jbyteArra
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvScaleI420(JNIEnv *env, jclass type, jbyteArray i420Src,
+Java_com_erick_utils_libyuv_YuvUtils_yuvScaleI420(JNIEnv *env, jclass type, jbyteArray i420Src,
                                           jint width, jint height, jbyteArray i420Dst,
                                           jint dstWidth, jint dstHeight, jint mode) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
@@ -311,7 +311,7 @@ Java_com_utils_libyuv_YuvUtils_yuvScaleI420(JNIEnv *env, jclass type, jbyteArray
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvRotateI420(JNIEnv *env, jclass type, jbyteArray i420Src,
+Java_com_erick_utils_libyuv_YuvUtils_yuvRotateI420(JNIEnv *env, jclass type, jbyteArray i420Src,
                                            jint width, jint height, jbyteArray i420Dst, jint degree) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
@@ -322,7 +322,7 @@ Java_com_utils_libyuv_YuvUtils_yuvRotateI420(JNIEnv *env, jclass type, jbyteArra
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvNV21ToI420(JNIEnv *env, jclass type, jbyteArray nv21Src,
+Java_com_erick_utils_libyuv_YuvUtils_yuvNV21ToI420(JNIEnv *env, jclass type, jbyteArray nv21Src,
                                            jint width, jint height, jbyteArray i420Dst) {
     jbyte *src_nv21_data = env->GetByteArrayElements(nv21Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
@@ -333,7 +333,7 @@ Java_com_utils_libyuv_YuvUtils_yuvNV21ToI420(JNIEnv *env, jclass type, jbyteArra
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_utils_libyuv_YuvUtils_yuvI420ToNV21(JNIEnv *env, jclass type, jbyteArray i420Src,
+Java_com_erick_utils_libyuv_YuvUtils_yuvI420ToNV21(JNIEnv *env, jclass type, jbyteArray i420Src,
                                            jint width, jint height, jbyteArray nv21Dst) {
 
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);

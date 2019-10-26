@@ -1,4 +1,4 @@
-package com.utils.libyuv;
+package com.erick.utils.libyuv;
 
 /**
  * 版本编号: 1.0;

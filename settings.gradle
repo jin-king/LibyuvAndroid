@@ -1,2 +1,2 @@
-include ':app', ':libyuv'
+include ':app', ':libyuv', ':camera'
 rootProject.name='LibyuvAndroid'
