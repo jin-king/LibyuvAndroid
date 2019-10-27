@@ -12,17 +12,15 @@ public class YuvUtils {
     }
 
     /**
-     *  尝试c层argb -> bitmap
+     * YUV数据的基本处理(i420-->mirror-->scale-->rotate-->nv21)
      */
-
-    /**
-     *  YUV数据的基本处理（i420-->mirror->scale->rotate->argb）
-     */
+    public static native void yuvI420ToNv21Compress(byte[] i420Src, int width, int height, byte[] nv21Dst, int dst_width, int dst_height, int mode, int degree, boolean isMirror);
 
 
     /**
-     * YUV数据的基本处理(nv21-->i420-->mirror-->scale-->rotate-->argb)
+     * YUV数据的基本处理(i420-->mirror-->scale-->rotate)
      */
+    public static native void yuvI420Compress(byte[] i420Src, int width, int height, byte[] i420Dst, int dst_width, int dst_height, int mode, int degree, boolean isMirror);
 
 
     /**
@@ -107,5 +105,11 @@ public class YuvUtils {
      * @param nv21Src 转化后的NV21数据
      **/
     public static native void yuvI420ToNV21(byte[] i420Src, int width, int height, byte[] nv21Src);
+
+    public static native void yuvI420ToARGB(byte[] i420Src, int width, int height, byte[] argbDst);
+
+    public static native void yuvNV21ToARGB(byte[] nv21Src, int width, int height, byte[] argbDst);
+
+    public static native void yuvARGBToNV21(byte[] argbSrc, int width, int height, byte[] nv21Dst);
 
 }

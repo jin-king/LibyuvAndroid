@@ -24,6 +24,7 @@ import com.utils.libyuvandroid.util.CameraUtil;
 import com.utils.libyuvandroid.util.SPUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -98,30 +99,103 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
                 @Override
                 public void run() {
                     long startTime = SystemClock.elapsedRealtime();
+//
+//                    int width = mCameraUtil.getCameraWidth();
+//                    int height = mCameraUtil.getCameraHeight();
+//                    final byte[] i420Data = new byte[width * height * 3 / 2];
+//                    YuvUtils.yuvNV21ToI420(srcData, width, height, i420Data);
+
+
+//                    final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
+//                    final int morientation = mCameraUtil.getMorientation();
+//                    YuvUtils.yuvI420ToNv21Compress(i420Data, width, height, dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
+//
+//                    Log.i("test_jj", "rotate time:" + (SystemClock.elapsedRealtime() - startTime));
+//
+//                    YuvImage yuvImage = new YuvImage(dstData, ImageFormat.NV21, scaleWidth, scaleHeight, null);
+//                    ByteArrayOutputStream fOut = new ByteArrayOutputStream();
+//                    yuvImage.compressToJpeg(new Rect(0, 0, scaleWidth, scaleHeight), 100, fOut);
+//
+//                    //将byte生成bitmap
+//                    byte[] bitData = fOut.toByteArray();
+//                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+//
+//                    Log.i("test_jj", "create time:" + (SystemClock.elapsedRealtime() - startTime));
+
 
                     //进行yuv数据的缩放，旋转镜像缩放等操作
                     final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
                     final int morientation = mCameraUtil.getMorientation();
                     YuvUtils.yuvCompress(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
-
-                    Log.i("test_jj", "rotate time:" + (SystemClock.elapsedRealtime() - startTime));
+                    Log.i("test_jj", "compress time:" + (SystemClock.elapsedRealtime() - startTime));
 
                     //进行yuv数据裁剪的操作
                     final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
                     YuvUtils.yuvCropI420(dstData, scaleWidth, scaleHeight, cropData, cropWidth, cropHeight, cropStartX, cropStartY);
+                    Log.i("test_jj", "crop time:" + (SystemClock.elapsedRealtime() - startTime));
 
-                    //这里将yuvi420转化为nv21，因为yuvimage只能操作nv21和yv12，为了演示方便，这里做一步转化的操作
-                    final byte[] nv21Data = new byte[cropWidth * cropHeight * 3 / 2];
-                    YuvUtils.yuvI420ToNV21(cropData, cropWidth, cropHeight, nv21Data);
+//                    final byte[] argbData = new byte[cropWidth * cropHeight * 4];
+//                    YuvUtils.yuvI420ToARGB(cropData, cropWidth, cropHeight, argbData);
+//                    Log.i("test_jj", "argb time:" + (SystemClock.elapsedRealtime() - startTime));
 
-                    //这里采用yuvImage将yuvi420转化为图片，当然用libyuv也是可以做到的，这里主要介绍libyuv的裁剪，旋转，缩放，镜像的操作
-                    YuvImage yuvImage = new YuvImage(nv21Data, ImageFormat.NV21, cropWidth, cropHeight, null);
-                    ByteArrayOutputStream fOut = new ByteArrayOutputStream();
-                    yuvImage.compressToJpeg(new Rect(0, 0, cropWidth, cropHeight), 100, fOut);
 
-                    //将byte生成bitmap
-                    byte[] bitData = fOut.toByteArray();
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+//                    int width = mCameraUtil.getCameraWidth();
+//                    int height = mCameraUtil.getCameraHeight();
+
+//                    Log.i("test_jj", "src_lenght: " + srcData.length + " width:" + width + " height: " + height);
+
+//                    final byte[] i420Data = new byte[width * height * 3 / 2];
+//                    YuvUtils.yuvNV21ToI420(srcData, width, height, i420Data);
+
+                    final byte[] argbData = new byte[cropWidth * cropHeight * 4];
+                    YuvUtils.yuvI420ToARGB(cropData, cropWidth, cropHeight, argbData);
+
+//                    final byte[] argbData = new byte[width * height * 4];
+//                    YuvUtils.yuvI420ToARGB(i420Data, width, height, argbData);
+//
+//                    Log.i("test_jj", "argb time:" + (SystemClock.elapsedRealtime() - startTime));
+
+
+//                    final byte[] nv21Data = new byte[cropWidth * cropHeight * 3 / 2];
+//                    YuvUtils.yuvARGBToNV21(argbData, cropWidth, cropHeight, nv21Data);
+
+//
+//                    //这里将yuvi420转化为nv21，因为yuvimage只能操作nv21和yv12，为了演示方便，这里做一步转化的操作
+//                    final byte[] nv21Data = new byte[cropWidth * cropHeight * 3 / 2];
+//                    YuvUtils.yuvI420ToNV21(cropData, cropWidth, cropHeight, nv21Data);
+//
+//                    //这里采用yuvImage将yuvi420转化为图片，当然用libyuv也是可以做到的，这里主要介绍libyuv的裁剪，旋转，缩放，镜像的操作
+//                    YuvImage yuvImage = new YuvImage(nv21Data, ImageFormat.NV21, cropWidth, cropHeight, null);
+//                    ByteArrayOutputStream fOut = new ByteArrayOutputStream();
+//                    yuvImage.compressToJpeg(new Rect(0, 0, cropWidth, cropHeight), 100, fOut);
+//
+//                    //将byte生成bitmap
+//                    byte[] bitData = fOut.toByteArray();
+//                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+
+//
+//                    final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
+//
+//                    Log.i("test_jj", "bitmap time:" + (SystemClock.elapsedRealtime() - startTime));
+//
+
+//                    int[] rgb = byteArray2RgbArray(argbData);
+//                    final Bitmap bitmap = Bitmap.createBitmap(rgb, cropWidth, cropHeight, Bitmap.Config.ARGB_8888);
+
+
+//                    int width = mCameraUtil.getCameraWidth();
+//                    int height = mCameraUtil.getCameraHeight();
+//
+//                    final byte[] argbData = new byte[width * height * 4];
+//
+//                    YuvUtils.yuvNV21ToARGB(srcData, width, height, argbData);
+
+                    final Bitmap bitmap = Bitmap.createBitmap(cropWidth, cropHeight, Bitmap.Config.ARGB_8888);
+                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
+
+                    Log.i("test_jj", "bitmap time:" + (SystemClock.elapsedRealtime() - startTime));
+
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
