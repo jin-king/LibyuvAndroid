@@ -12,6 +12,20 @@ public class YuvUtils {
     }
 
     /**
+     *  尝试c层argb -> bitmap
+     */
+
+    /**
+     *  YUV数据的基本处理（i420-->mirror->scale->rotate->argb）
+     */
+
+
+    /**
+     * YUV数据的基本处理(nv21-->i420-->mirror-->scale-->rotate-->argb)
+     */
+
+
+    /**
      * YUV数据的基本的处理（nv21-->i420-->mirror-->scale-->rotate）
      *
      * @param nv21Src    原始数据
@@ -93,4 +107,5 @@ public class YuvUtils {
      * @param nv21Src 转化后的NV21数据
      **/
     public static native void yuvI420ToNV21(byte[] i420Src, int width, int height, byte[] nv21Src);
+
 }
