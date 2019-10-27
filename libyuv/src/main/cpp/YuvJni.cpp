@@ -54,7 +54,7 @@ void nv12ToI420(jbyte *Src_data, jint src_width, jint src_height, jbyte *Dst_dat
     // YUV420 video size
     jint I420_Size = src_width * src_height * 3 / 2;
     jint I420_Y_Size = src_width * src_height;
-    jint I420_U_Size = (src_width >> 1)*(src_height >> 1);
+    jint I420_U_Size = (src_width >> 1) * (src_height >> 1);
     jint I420_V_Size = I420_U_Size;
 
     // src: buffer address of Y channel and UV channel
@@ -147,7 +147,7 @@ void rotateI420(jbyte *src_i420_data, jint width, jint height, jbyte *dst_i420_d
                            (uint8_t *) dst_i420_v_data, height >> 1,
                            width, height,
                            (libyuv::RotationMode) degree);
-    }else{
+    } else {
         libyuv::I420Rotate((const uint8_t *) src_i420_y_data, width,
                            (const uint8_t *) src_i420_u_data, width >> 1,
                            (const uint8_t *) src_i420_v_data, width >> 1,
@@ -188,7 +188,7 @@ void scaleI420(jbyte *src_i420_data, jint width, jint height, jbyte *dst_i420_da
 
 // 裁剪
 void cropI420(jbyte *src_i420_data, jint src_length, jint width, jint height,
-              jbyte *dst_i420_data, jint dst_width, jint dst_height, jint left, jint top){
+              jbyte *dst_i420_data, jint dst_width, jint dst_height, jint left, jint top) {
     jint dst_i420_y_size = dst_width * dst_height;
     jint dst_i420_u_size = (dst_width >> 1) * (dst_height >> 1);
 
@@ -209,11 +209,11 @@ void cropI420(jbyte *src_i420_data, jint src_length, jint width, jint height,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
-                                         jbyteArray nv21Src, jint width,
-                                         jint height, jbyteArray i420Dst,
-                                         jint dst_width, jint dst_height,
-                                         jint mode, jint degree,
-                                         jboolean isMirror) {
+                                                 jbyteArray nv21Src, jint width,
+                                                 jint height, jbyteArray i420Dst,
+                                                 jint dst_width, jint dst_height,
+                                                 jint mode, jint degree,
+                                                 jboolean isMirror) {
 
     jbyte *src_nv21_data = env->GetByteArrayElements(nv21Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
@@ -224,18 +224,10 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
     nv21ToI420(src_nv21_data, width, height, i420_data);
     tmp_dst_i420_data = i420_data;
 
-    // 镜像
-    jbyte *i420_mirror_data = NULL;
-    if(isMirror){
-        i420_mirror_data = (jbyte *)malloc(sizeof(jbyte) * width * height * 3 / 2);
-        mirrorI420(tmp_dst_i420_data, width, height, i420_mirror_data);
-        tmp_dst_i420_data = i420_mirror_data;
-    }
-
     // 缩放
     jbyte *i420_scale_data = NULL;
-    if(width != dst_width || height != dst_height){
-        i420_scale_data = (jbyte *)malloc(sizeof(jbyte) * width * height * 3 / 2);
+    if (width != dst_width || height != dst_height) {
+        i420_scale_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
         scaleI420(tmp_dst_i420_data, width, height, i420_scale_data, dst_width, dst_height, mode);
         tmp_dst_i420_data = i420_scale_data;
         width = dst_width;
@@ -244,10 +236,24 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
 
     // 旋转
     jbyte *i420_rotate_data = NULL;
-    if (degree == libyuv::kRotate90 || degree == libyuv::kRotate180 || degree == libyuv::kRotate270){
-        i420_rotate_data = (jbyte *)malloc(sizeof(jbyte) * width * height * 3 / 2);
+    if (degree == libyuv::kRotate90 || degree == libyuv::kRotate180 ||
+        degree == libyuv::kRotate270) {
+        i420_rotate_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
         rotateI420(tmp_dst_i420_data, width, height, i420_rotate_data, degree);
         tmp_dst_i420_data = i420_rotate_data;
+    }
+    if (degree == libyuv::kRotate90 || degree == libyuv::kRotate270) {
+        jint tempWidth = width;
+        width = height;
+        height = tempWidth;
+    }
+
+    // 镜像
+    jbyte *i420_mirror_data = NULL;
+    if (isMirror) {
+        i420_mirror_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+        mirrorI420(tmp_dst_i420_data, width, height, i420_mirror_data);
+        tmp_dst_i420_data = i420_mirror_data;
     }
 
     // 同步数据
@@ -258,18 +264,20 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvCompress(JNIEnv *env, jclass type,
     env->ReleaseByteArrayElements(i420Dst, dst_i420_data, 0);
 
     // 释放
-    if(i420_data != NULL) free(i420_data);
-    if(i420_mirror_data != NULL) free(i420_mirror_data);
-    if(i420_scale_data != NULL) free(i420_scale_data);
-    if(i420_rotate_data != NULL) free(i420_rotate_data);
+    if (i420_data != NULL) free(i420_data);
+    if (i420_mirror_data != NULL) free(i420_mirror_data);
+    if (i420_scale_data != NULL) free(i420_scale_data);
+    if (i420_rotate_data != NULL) free(i420_rotate_data);
 }
 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_erick_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyteArray src_, jint width,
-                                         jint height, jbyteArray dst_, jint dst_width, jint dst_height,
-                                         jint left, jint top) {
+Java_com_erick_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyteArray src_,
+                                                 jint width,
+                                                 jint height, jbyteArray dst_, jint dst_width,
+                                                 jint dst_height,
+                                                 jint left, jint top) {
     //裁剪的区域大小不对
     if (left + dst_width > width || top + dst_height > height) {
         return;
@@ -282,14 +290,15 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvCropI420(JNIEnv *env, jclass type, jbyte
     jint src_length = env->GetArrayLength(src_);
     jbyte *src_i420_data = env->GetByteArrayElements(src_, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(dst_, NULL);
-    cropI420(src_i420_data, src_length, width, height, dst_i420_data, dst_width, dst_height, left, top);
+    cropI420(src_i420_data, src_length, width, height, dst_i420_data, dst_width, dst_height, left,
+             top);
     env->ReleaseByteArrayElements(dst_, dst_i420_data, 0);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvMirrorI420(JNIEnv *env, jclass type, jbyteArray i420Src,
-                                           jint width, jint height, jbyteArray i420Dst) {
+                                                   jint width, jint height, jbyteArray i420Dst) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
     // i420数据镜像
@@ -300,8 +309,8 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvMirrorI420(JNIEnv *env, jclass type, jby
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvScaleI420(JNIEnv *env, jclass type, jbyteArray i420Src,
-                                          jint width, jint height, jbyteArray i420Dst,
-                                          jint dstWidth, jint dstHeight, jint mode) {
+                                                  jint width, jint height, jbyteArray i420Dst,
+                                                  jint dstWidth, jint dstHeight, jint mode) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
     // i420数据缩放
@@ -312,7 +321,8 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvScaleI420(JNIEnv *env, jclass type, jbyt
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvRotateI420(JNIEnv *env, jclass type, jbyteArray i420Src,
-                                           jint width, jint height, jbyteArray i420Dst, jint degree) {
+                                                   jint width, jint height, jbyteArray i420Dst,
+                                                   jint degree) {
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
     // i420数据旋转
@@ -323,7 +333,7 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvRotateI420(JNIEnv *env, jclass type, jby
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvNV21ToI420(JNIEnv *env, jclass type, jbyteArray nv21Src,
-                                           jint width, jint height, jbyteArray i420Dst) {
+                                                   jint width, jint height, jbyteArray i420Dst) {
     jbyte *src_nv21_data = env->GetByteArrayElements(nv21Src, NULL);
     jbyte *dst_i420_data = env->GetByteArrayElements(i420Dst, NULL);
     // nv21转化为i420
@@ -334,7 +344,7 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvNV21ToI420(JNIEnv *env, jclass type, jby
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_erick_utils_libyuv_YuvUtils_yuvI420ToNV21(JNIEnv *env, jclass type, jbyteArray i420Src,
-                                           jint width, jint height, jbyteArray nv21Dst) {
+                                                   jint width, jint height, jbyteArray nv21Dst) {
 
     jbyte *src_i420_data = env->GetByteArrayElements(i420Src, NULL);
     jbyte *dst_nv21_data = env->GetByteArrayElements(nv21Dst, NULL);
