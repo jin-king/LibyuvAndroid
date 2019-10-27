@@ -11,6 +11,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.erick.utils.libyuv.YuvUtils;
@@ -95,10 +97,14 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
 
                 @Override
                 public void run() {
+                    long startTime = SystemClock.elapsedRealtime();
+
                     //进行yuv数据的缩放，旋转镜像缩放等操作
                     final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
                     final int morientation = mCameraUtil.getMorientation();
                     YuvUtils.yuvCompress(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
+
+                    Log.i("test_jj", "rotate time:" + (SystemClock.elapsedRealtime() - startTime));
 
                     //进行yuv数据裁剪的操作
                     final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
