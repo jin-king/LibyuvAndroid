@@ -417,13 +417,13 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvI420ToNv21Compress(JNIEnv *env, jclass c
     jbyte *src_i420_data = env->GetByteArrayElements(i420_src, NULL);
     jbyte *dst_nv21_data = env->GetByteArrayElements(nv21_dst, NULL);
 
-    jbyte *tmp_dst_nv21_data = NULL;
+    jbyte *tmp_dst_nv21_data = src_i420_data;
 
     // 缩放
     jbyte *i420_scale_data = NULL;
     if (width != dst_width || height != dst_height) {
         i420_scale_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
-        scaleI420(src_i420_data, width, height, i420_scale_data, dst_width, dst_height, mode);
+        scaleI420(tmp_dst_nv21_data, width, height, i420_scale_data, dst_width, dst_height, mode);
         tmp_dst_nv21_data = i420_scale_data;
         width = dst_width;
         height = dst_height;
@@ -498,16 +498,16 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvI420Compress(JNIEnv *env, jclass clazz, 
                                                      jint degree, jboolean is_mirror) {
 
     jbyte *src_i420_data = env->GetByteArrayElements(i420_src, NULL);
-    jbyte *dst_i420_data = env->GetByteArrayElements(i420_dst, NULL);
+    jbyte *dst_nv21_data = env->GetByteArrayElements(i420_dst, NULL);
 
-    jbyte *tmp_dst_i420_data = NULL;
+    jbyte *tmp_dst_nv21_data = src_i420_data;
 
     // 缩放
     jbyte *i420_scale_data = NULL;
     if (width != dst_width || height != dst_height) {
         i420_scale_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
-        scaleI420(src_i420_data, width, height, i420_scale_data, dst_width, dst_height, mode);
-        tmp_dst_i420_data = i420_scale_data;
+        scaleI420(tmp_dst_nv21_data, width, height, i420_scale_data, dst_width, dst_height, mode);
+        tmp_dst_nv21_data = i420_scale_data;
         width = dst_width;
         height = dst_height;
     }
@@ -517,8 +517,8 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvI420Compress(JNIEnv *env, jclass clazz, 
     if (degree == libyuv::kRotate90 || degree == libyuv::kRotate180 ||
         degree == libyuv::kRotate270) {
         i420_rotate_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
-        rotateI420(tmp_dst_i420_data, width, height, i420_rotate_data, degree);
-        tmp_dst_i420_data = i420_rotate_data;
+        rotateI420(tmp_dst_nv21_data, width, height, i420_rotate_data, degree);
+        tmp_dst_nv21_data = i420_rotate_data;
     }
     if (degree == libyuv::kRotate90 || degree == libyuv::kRotate270) {
         jint tempWidth = width;
@@ -530,18 +530,23 @@ Java_com_erick_utils_libyuv_YuvUtils_yuvI420Compress(JNIEnv *env, jclass clazz, 
     jbyte *i420_mirror_data = NULL;
     if (is_mirror) {
         i420_mirror_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
-        mirrorI420(tmp_dst_i420_data, width, height, i420_mirror_data);
-        tmp_dst_i420_data = i420_mirror_data;
+        mirrorI420(tmp_dst_nv21_data, width, height, i420_mirror_data);
+        tmp_dst_nv21_data = i420_mirror_data;
     }
 
+//    //i420 转 nv21
+//    jbyte *nv21_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+//    i420ToNv21(tmp_dst_nv21_data, width, height, nv21_data);
+//    tmp_dst_nv21_data = nv21_data;
 
     // 同步数据
     jint len = env->GetArrayLength(i420_dst);
-    memcpy(dst_i420_data, tmp_dst_i420_data, len);
-    tmp_dst_i420_data = NULL;
-    env->ReleaseByteArrayElements(i420_dst, dst_i420_data, 0);
+    memcpy(dst_nv21_data, tmp_dst_nv21_data, len);
+    tmp_dst_nv21_data = NULL;
+    env->ReleaseByteArrayElements(i420_dst, dst_nv21_data, 0);
 
     // 释放
+//    if (nv21_data != NULL) free(nv21_data);
     if (i420_mirror_data != NULL) free(i420_mirror_data);
     if (i420_scale_data != NULL) free(i420_scale_data);
     if (i420_rotate_data != NULL) free(i420_rotate_data);

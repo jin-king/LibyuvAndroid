@@ -99,18 +99,52 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
                 @Override
                 public void run() {
                     long startTime = SystemClock.elapsedRealtime();
-//
-//                    int width = mCameraUtil.getCameraWidth();
-//                    int height = mCameraUtil.getCameraHeight();
-//                    final byte[] i420Data = new byte[width * height * 3 / 2];
-//                    YuvUtils.yuvNV21ToI420(srcData, width, height, i420Data);
 
+                    int width = mCameraUtil.getCameraWidth();
+                    int height = mCameraUtil.getCameraHeight();
 
-//                    final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
+                    final byte[] i420Data = new byte[width * height * 3 / 2];
+                    YuvUtils.yuvNV21ToI420(srcData, width, height, i420Data);
+
+//                    final byte[] i420Dst = new byte[width * height * 3 / 2];
 //                    final int morientation = mCameraUtil.getMorientation();
-//                    YuvUtils.yuvI420ToNv21Compress(i420Data, width, height, dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
+//                    YuvUtils.yuvI420Compress(i420Data, width, height, i420Dst, height, width, 0, morientation, morientation == 270);
+
+//                    //这里将yuvi420转化为nv21，因为yuvimage只能操作nv21和yv12，为了演示方便，这里做一步转化的操作
+//                    final byte[] nv21Data = new byte[width * height * 3 / 2];
+//                    YuvUtils.yuvI420ToNV21(i420Dst, height, width, nv21Data);
+
+//                    YuvImage yuvImage = new YuvImage(nv21Data, ImageFormat.NV21, height, width, null);
+//                    ByteArrayOutputStream fOut = new ByteArrayOutputStream();
+//                    yuvImage.compressToJpeg(new Rect(0, 0, height, width), 100, fOut);
 //
-//                    Log.i("test_jj", "rotate time:" + (SystemClock.elapsedRealtime() - startTime));
+//                    //将byte生成bitmap
+//                    byte[] bitData = fOut.toByteArray();
+//                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+//
+//                    final byte[] dstData = new byte[width * height * 3 / 2];
+//                    final int morientation = mCameraUtil.getMorientation();
+//                    YuvUtils.yuvI420ToNv21Compress(i420Data, width, height, dstData, height, width, 0, morientation, morientation == 270);
+//
+//                    final byte[] argbData = new byte[width * height * 4];
+//                    YuvUtils.yuvNV21ToARGB(dstData, height, width, argbData);
+//
+//                    final Bitmap bitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888);
+//                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
+
+
+//
+                    final byte[] dstData = new byte[width * height * 3 / 2];
+                    final int morientation = mCameraUtil.getMorientation();
+                    YuvUtils.yuvI420Compress(i420Data, width, height, dstData, width, height, 0, morientation, morientation == 270);
+
+                    final byte[] argbData = new byte[height * width * 4];
+                    YuvUtils.yuvI420ToARGB(dstData, height, width, argbData);
+
+                    final Bitmap bitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888);
+                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
+
+                    Log.i("test_jj", "rotate time:" + (SystemClock.elapsedRealtime() - startTime));
 //
 //                    YuvImage yuvImage = new YuvImage(dstData, ImageFormat.NV21, scaleWidth, scaleHeight, null);
 //                    ByteArrayOutputStream fOut = new ByteArrayOutputStream();
@@ -119,20 +153,20 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
 //                    //将byte生成bitmap
 //                    byte[] bitData = fOut.toByteArray();
 //                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+
+                    Log.i("test_jj", "create time:" + (SystemClock.elapsedRealtime() - startTime));
+
+
+//                    //进行yuv数据的缩放，旋转镜像缩放等操作
+//                    final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
+//                    final int morientation = mCameraUtil.getMorientation();
+//                    YuvUtils.yuvCompress(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
+//                    Log.i("test_jj", "compress time:" + (SystemClock.elapsedRealtime() - startTime));
 //
-//                    Log.i("test_jj", "create time:" + (SystemClock.elapsedRealtime() - startTime));
-
-
-                    //进行yuv数据的缩放，旋转镜像缩放等操作
-                    final byte[] dstData = new byte[scaleWidth * scaleHeight * 3 / 2];
-                    final int morientation = mCameraUtil.getMorientation();
-                    YuvUtils.yuvCompress(srcData, mCameraUtil.getCameraWidth(), mCameraUtil.getCameraHeight(), dstData, scaleHeight, scaleWidth, 0, morientation, morientation == 270);
-                    Log.i("test_jj", "compress time:" + (SystemClock.elapsedRealtime() - startTime));
-
-                    //进行yuv数据裁剪的操作
-                    final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
-                    YuvUtils.yuvCropI420(dstData, scaleWidth, scaleHeight, cropData, cropWidth, cropHeight, cropStartX, cropStartY);
-                    Log.i("test_jj", "crop time:" + (SystemClock.elapsedRealtime() - startTime));
+//                    //进行yuv数据裁剪的操作
+//                    final byte[] cropData = new byte[cropWidth * cropHeight * 3 / 2];
+//                    YuvUtils.yuvCropI420(dstData, scaleWidth, scaleHeight, cropData, cropWidth, cropHeight, cropStartX, cropStartY);
+//                    Log.i("test_jj", "crop time:" + (SystemClock.elapsedRealtime() - startTime));
 
 //                    final byte[] argbData = new byte[cropWidth * cropHeight * 4];
 //                    YuvUtils.yuvI420ToARGB(cropData, cropWidth, cropHeight, argbData);
@@ -147,12 +181,10 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
 //                    final byte[] i420Data = new byte[width * height * 3 / 2];
 //                    YuvUtils.yuvNV21ToI420(srcData, width, height, i420Data);
 
-                    final byte[] argbData = new byte[cropWidth * cropHeight * 4];
-                    YuvUtils.yuvI420ToARGB(cropData, cropWidth, cropHeight, argbData);
-
-//                    final byte[] argbData = new byte[width * height * 4];
-//                    YuvUtils.yuvI420ToARGB(i420Data, width, height, argbData);
+//                    final byte[] argbData = new byte[cropWidth * cropHeight * 4];
+//                    YuvUtils.yuvI420ToARGB(cropData, cropWidth, cropHeight, argbData);
 //
+
 //                    Log.i("test_jj", "argb time:" + (SystemClock.elapsedRealtime() - startTime));
 
 
@@ -173,10 +205,7 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
 //                    byte[] bitData = fOut.toByteArray();
 //                    final Bitmap bitmap = BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
 
-//
-//                    final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
-//
+
 //                    Log.i("test_jj", "bitmap time:" + (SystemClock.elapsedRealtime() - startTime));
 //
 
@@ -190,9 +219,9 @@ public class CameraSurfaceManager implements SensorEventListener, CameraYUVDataL
 //                    final byte[] argbData = new byte[width * height * 4];
 //
 //                    YuvUtils.yuvNV21ToARGB(srcData, width, height, argbData);
-
-                    final Bitmap bitmap = Bitmap.createBitmap(cropWidth, cropHeight, Bitmap.Config.ARGB_8888);
-                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
+//
+//                    final Bitmap bitmap = Bitmap.createBitmap(cropWidth, cropHeight, Bitmap.Config.ARGB_8888);
+//                    bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbData));
 
                     Log.i("test_jj", "bitmap time:" + (SystemClock.elapsedRealtime() - startTime));
 
